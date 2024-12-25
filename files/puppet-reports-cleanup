@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+find /var/lib/puppet/reports -mmin +59 -type f -exec rm -f {} \;

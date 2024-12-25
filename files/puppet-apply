@@ -1,0 +1,26 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+readonly LIBRARIAN='/etc/puppetlabs/code'
+readonly PUPPETFILE="${LIBRARIAN}/Puppetfile"
+readonly INPUT=$(puppet lookup --merge=deep modules)
+cat << EOF > "${PUPPETFILE}"
+#!/usr/bin/env ruby
+#^syntax detection
+forge "https://forgeapi.puppetlabs.com"
+EOF
+COUNT=0
+while IFS= read -r LINE
+do
+  if [[ "${COUNT}" -eq 0 ]]
+  then
+    COUNT=$((COUNT+1))
+    continue
+  fi
+  IFS=': '; MODULE=($LINE); unset IFS;
+  echo "mod '${MODULE[0]}', '${MODULE[1]}'" >> "${PUPPETFILE}"
+  ((COUNT++)) 
+done <<< "${INPUT}"
+cd "${LIBRARIAN}"
+librarian-puppet install
+puppet apply /etc/puppetlabs/code/environments/production
