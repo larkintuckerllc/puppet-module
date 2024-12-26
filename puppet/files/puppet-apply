@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+readonly ENVIRONMENT='/etc/puppetlabs/code/environments/production'
 readonly LIBRARIAN='/etc/puppetlabs/code'
-readonly PUPPETFILE="${LIBRARIAN}/Puppetfile"
 readonly INPUT=$(puppet lookup --merge=deep modules)
-cat << EOF > "${PUPPETFILE}"
+cat << EOF > "${LIBRARIAN}/Puppetfile"
 #!/usr/bin/env ruby
 #^syntax detection
 forge "https://forgeapi.puppetlabs.com"
@@ -18,7 +18,7 @@ do
     continue
   fi
   IFS=': '; MODULE=($LINE); unset IFS;
-  echo "mod '${MODULE[0]}', '${MODULE[1]}'" >> "${PUPPETFILE}"
+  echo "mod '${MODULE[0]}', '${MODULE[1]}'" >> "${LIBRARIAN}/Puppetfile"
   ((COUNT++)) 
 done <<< "${INPUT}"
 cd "${LIBRARIAN}"
