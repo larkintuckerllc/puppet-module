@@ -3,7 +3,7 @@ set -euo pipefail
 
 readonly ENVIRONMENT='/etc/puppetlabs/code/environments/production'
 readonly LIBRARIAN='/etc/puppetlabs/code'
-readonly INPUT=$(puppet lookup --merge=deep modules)
+readonly INPUT=$(puppet lookup --merge=deep modules "${ENVIRONMENT}")
 cat << EOF > "${LIBRARIAN}/Puppetfile"
 #!/usr/bin/env ruby
 #^syntax detection
